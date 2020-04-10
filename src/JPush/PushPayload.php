@@ -20,7 +20,7 @@ class PushPayload {
     private $registrationIds;
     private $segmentIds;
     private $abtests;
-
+    private $voipNotification;
     private $notificationAlert;
     private $iosNotification;
     private $androidNotification;
@@ -285,6 +285,21 @@ class PushPayload {
             }
         }
 
+        if (!is_null($this->voipNotification)) {
+            $notification['voip'] = $this->voipNotification;
+        }
+
+        if (!is_null($this->winPhoneNotification)) {
+            $notification['winphone'] = $this->winPhoneNotification;
+            if (is_null($this->winPhoneNotification['alert'])) {
+                if (is_null($this->winPhoneNotification)) {
+                    throw new InvalidArgumentException("WinPhone alert can not be null");
+                } else {
+                    $notification['winphone']['alert'] = $this->notificationAlert;
+                }
+            }
+        }
+
         if (count($notification) > 0) {
             $payload['notification'] = $notification;
         }
@@ -374,6 +389,12 @@ class PushPayload {
             $ios['badge'] = '+1';
         }
         $this->iosNotification = $ios;
+        return $this;
+    }
+
+    public function voipNotification($key,$value)
+    {
+        $this->voipNotification = [$key => $value];
         return $this;
     }
 
